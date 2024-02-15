@@ -5,3 +5,5 @@ bodypath = "example.json"
 
 [headers]
 content-type = "application/json"
+Authorization = "AuthToken"
+User-Agent = "Local"

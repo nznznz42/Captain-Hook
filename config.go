@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -42,8 +45,52 @@ func (c *Config) readBody() map[string]interface{} {
 
 	bytes, _ := io.ReadAll(jsonFile)
 
-	var bodydata map[string]interface{}
+	var bodydata interface{}
 	json.Unmarshal(bytes, &bodydata)
 
-	return bodydata
+	result := make(map[string]interface{})
+
+	switch v := bodydata.(type) {
+	case map[string]interface{}:
+		for key, val := range v {
+			result[key] = val
+		}
+	}
+
+	return result
+}
+
+func (c *Config) constructRequest() (*http.Request, error) {
+	body := c.readBody()
+
+	requestBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", c.URL, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, err
+	}
+
+	for key, value := range c.Headers {
+		req.Header.Set(key, value)
+	}
+
+	return req, nil
+}
+
+func printRequest(req *http.Request) {
+	fmt.Println("Request Method:", req.Method)
+	fmt.Println("Request URL:", req.URL.String())
+	fmt.Println("Request Headers:")
+	for key, values := range req.Header {
+		for _, value := range values {
+			fmt.Printf("\t%s: %s\n", key, value)
+		}
+	}
+	fmt.Println("Request Body:")
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(req.Body)
+	fmt.Println(buf.String())
 }
