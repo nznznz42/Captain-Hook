@@ -8,7 +8,7 @@ func main() {
 		panic("nooo")
 	}
 
-	s := NewServer(420, "/Configs")
+	s := NewServer(420, "reqlog.log")
 	s.Start()
 	s.sendRequest(req)
 	s.Stop()
