@@ -26,8 +26,10 @@ func main() {
 
 		switch text {
 		case "help":
+			count := 1
 			for i, v := range commandList {
-				fmt.Printf("%s: %s\n", i, v)
+				fmt.Printf("\t%d. %s: %s\n", count, i, v)
+				count += 1
 			}
 		case "start":
 			s.Start()
