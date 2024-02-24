@@ -3,20 +3,24 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"time"
 )
 
 type Server struct {
-	port      int
 	logger    *RequestLogger
 	server    *http.Server
 	isRunning bool
 }
 
-func NewServer(port int, logFilePath string) *Server {
-	addr := fmt.Sprintf(":%d", port)
+func NewServer(logFilePath string) *Server {
+	port, err := getFreePort()
+	if err != nil {
+		panic(err)
+	}
+
 	logger, err := NewRequestLogger(logFilePath)
 
 	if err != nil {
@@ -24,13 +28,22 @@ func NewServer(port int, logFilePath string) *Server {
 	}
 
 	return &Server{
-		port:   port,
 		logger: logger,
 		server: &http.Server{
-			Addr: addr,
+			Addr: string(rune(port)),
 		},
 		isRunning: true,
 	}
+}
+
+func getFreePort() (int, error) {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		return 0, err
+	}
+	defer listener.Close()
+	addr := listener.Addr().(*net.TCPAddr)
+	return addr.Port, nil
 }
 
 func (s *Server) Start() {
@@ -40,7 +53,7 @@ func (s *Server) Start() {
 	}
 
 	go func() {
-		fmt.Printf("\nServer is starting on port: %d\n", s.port)
+		fmt.Printf("\nServer is starting on port: %s\n", s.server.Addr)
 		err := s.server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			fmt.Printf("Error starting server: %s\n", err)
