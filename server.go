@@ -9,9 +9,10 @@ import (
 )
 
 type Server struct {
-	port   int
-	logger *RequestLogger
-	server *http.Server
+	port      int
+	logger    *RequestLogger
+	server    *http.Server
+	isRunning bool
 }
 
 func NewServer(port int, logFilePath string) *Server {
@@ -28,12 +29,18 @@ func NewServer(port int, logFilePath string) *Server {
 		server: &http.Server{
 			Addr: addr,
 		},
+		isRunning: true,
 	}
 }
 
 func (s *Server) Start() {
+	if s.isRunning {
+		fmt.Println("Server is already running.")
+		return
+	}
+
 	go func() {
-		fmt.Printf("Server is starting on port: %d\n", s.port)
+		fmt.Printf("\nServer is starting on port: %d\n", s.port)
 		err := s.server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			fmt.Printf("Error starting server: %s\n", err)
@@ -43,6 +50,11 @@ func (s *Server) Start() {
 }
 
 func (s *Server) Stop() {
+	if !s.isRunning {
+		fmt.Println("Server is not running.")
+		return
+	}
+
 	fmt.Println("Server is shutting down.")
 	var shutdownTimeout = 5 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
@@ -52,6 +64,7 @@ func (s *Server) Stop() {
 		fmt.Printf("Error stopping server: %s\n", err)
 		os.Exit(1)
 	}
+	s.isRunning = false
 }
 
 func (s *Server) sendRequest(request *http.Request) (*http.Response, error) {

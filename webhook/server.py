@@ -16,6 +16,11 @@ def start_server(port):
                     break
                 print(f"Received data: {data.decode('utf-8')}")
 
+                response = data
+
+                conn.sendall(response)
+                print("Response Sent")
+
 if __name__ == "__main__":
     port_number = 8080
     start_server(port_number)

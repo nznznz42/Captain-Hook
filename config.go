@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -78,19 +77,4 @@ func (c *Config) constructRequest() (*http.Request, error) {
 	}
 
 	return req, nil
-}
-
-func printRequest(req *http.Request) {
-	fmt.Println("Request Method:", req.Method)
-	fmt.Println("Request URL:", req.URL.String())
-	fmt.Println("Request Headers:")
-	for key, values := range req.Header {
-		for _, value := range values {
-			fmt.Printf("\t%s: %s\n", key, value)
-		}
-	}
-	fmt.Println("Request Body:")
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(req.Body)
-	fmt.Println(buf.String())
 }
