@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -27,10 +28,12 @@ func NewServer(logFilePath string) *Server {
 		panic(err)
 	}
 
+	fmt.Printf("Server Running on: %d\n", port)
+
 	return &Server{
 		logger: logger,
 		server: &http.Server{
-			Addr: string(rune(port)),
+			Addr: strconv.Itoa(port),
 		},
 		isRunning: true,
 	}

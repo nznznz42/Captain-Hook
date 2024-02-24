@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -66,6 +67,7 @@ func (c *Config) constructRequest() (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+	//fmt.Print(requestBody)
 
 	req, err := http.NewRequest("POST", c.URL, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -75,6 +77,7 @@ func (c *Config) constructRequest() (*http.Request, error) {
 	for key, value := range c.Headers {
 		req.Header.Set(key, value)
 	}
+	fmt.Print(req.URL)
 
 	return req, nil
 }
