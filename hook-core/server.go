@@ -1,4 +1,4 @@
-package main
+package hookcore
 
 import (
 	"context"
@@ -83,7 +83,7 @@ func (s *Server) Stop() {
 	s.isRunning = false
 }
 
-func (s *Server) sendRequest(request *http.Request) (*http.Response, error) {
+func (s *Server) SendRequest(request *http.Request) (*http.Response, error) {
 	client := &http.Client{}
 	s.logger.LogRequest(request)
 	response, err := client.Do(request)

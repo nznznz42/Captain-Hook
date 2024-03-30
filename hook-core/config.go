@@ -1,4 +1,4 @@
-package main
+package hookcore
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ type Config struct {
 	Bodypath string            `toml:"bodypath"`
 }
 
-func readConfigFile(filename string) Config {
+func ReadConfigFile(filename string) Config {
 	var config Config
 
 	filepath := "Configs/" + filename
@@ -60,14 +60,13 @@ func (c *Config) readBody() map[string]interface{} {
 	return result
 }
 
-func (c *Config) constructRequest() (*http.Request, error) {
+func (c *Config) ConstructRequest() (*http.Request, error) {
 	body := c.readBody()
 
 	requestBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Print(requestBody)
 
 	req, err := http.NewRequest("POST", c.URL, bytes.NewBuffer(requestBody))
 	if err != nil {
