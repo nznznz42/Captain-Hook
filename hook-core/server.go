@@ -133,7 +133,7 @@ func SendPayload(cmd *Ltestcmd) {
 			fmt.Println("Error: received value is not of type *http.Response")
 			return
 		}
-		//defer httpResponse.Body.Close()
+		defer httpResponse.Body.Close()
 
 		body, err := io.ReadAll(httpResponse.Body)
 		if err != nil {

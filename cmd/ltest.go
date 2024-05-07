@@ -38,5 +38,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	ltestCmd.Flags().BoolVarP("randomize", "r", false, "randomize payload")
+	ltestCmd.Flags().BoolP("randomize", "r", false, "randomize payload")
 }
