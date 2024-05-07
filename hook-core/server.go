@@ -6,6 +6,7 @@ package hookcore
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -99,4 +100,49 @@ func (s *Server) SendRequest(request *http.Request) (*http.Response, error) {
 	defer response.Body.Close()
 
 	return response, nil
+}
+
+func SendPayload(cmd *Ltestcmd) {
+	logFileName := cmd.LogFile
+	configFileName := cmd.ConfigFile
+	rflag := cmd.Rflag
+
+	s := NewServer(logFileName)
+
+	c := ReadConfigFile(configFileName)
+
+	req, err := c.ConstructRequest(rflag)
+	if err != nil {
+		panic(err)
+	}
+
+	responseChan := make(chan interface{})
+
+	go func() {
+		response, err := s.SendRequest(req)
+		if err != nil {
+			panic(err)
+		}
+		responseChan <- response
+	}()
+
+	select {
+	case received := <-responseChan:
+		httpResponse, ok := received.(*http.Response)
+		if !ok {
+			fmt.Println("Error: received value is not of type *http.Response")
+			return
+		}
+		//defer httpResponse.Body.Close()
+
+		body, err := io.ReadAll(httpResponse.Body)
+		if err != nil {
+			fmt.Println("Error reading response body:", err)
+			return
+		}
+
+		fmt.Println("Response received:", string(body))
+	case <-time.After(time.Second * 30):
+		fmt.Println("Timeout: No response received within 30 seconds")
+	}
 }

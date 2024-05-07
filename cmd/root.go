@@ -12,7 +12,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "hooktest",
 	Short: "A Simple Local First Webhook Tester",
-	Long:  `hooktest is a simple webhook tester that allows you to test a webhook locally by generating random payloads or if you want, you can just deploy the cloud component and test your webhook the traditional way.`,
+	Long:  `hooktest is a simple webhook tester that allows you to test a webhook locally by generating random payloads or if you want, you can deploy the cloud component and test your webhook the traditional way.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

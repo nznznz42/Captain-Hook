@@ -21,14 +21,10 @@ func RandomString(length int) string {
 }
 
 func RandomURL() string {
-	charset := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	length := seededRand.Intn(10) + 5
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return "https://" + string(b) + ".com"
+	length := rand.Intn(8)
+	min := 2
+	uri := RandomString(length + min)
+	return "https://" + uri + ".com"
 }
 
 func RandomizeJSON(data interface{}) {

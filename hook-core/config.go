@@ -63,8 +63,12 @@ func (c *Config) readBody() map[string]interface{} {
 	return result
 }
 
-func (c *Config) ConstructRequest() (*http.Request, error) {
+func (c *Config) ConstructRequest(rflag bool) (*http.Request, error) {
 	body := c.readBody()
+
+	if rflag {
+		RandomizeJSON(body)
+	}
 
 	requestBody, err := json.Marshal(body)
 	if err != nil {

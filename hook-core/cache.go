@@ -8,29 +8,42 @@ import (
 	"os"
 )
 
-type ltestcmd struct {
-	configFile string `json:"configFile"`
-	logFile    string `json:"logFile"`
-	rFlag      bool   `json:"random"`
+type Ltestcmd struct {
+	ConfigFile string `json:"configFile"`
+	LogFile    string `json:"logFile"`
+	Rflag      bool   `json:"random"`
 }
 
-func serialize(cmd *ltestcmd) ([]byte, error) {
-	jsonData, err := json.Marshal(cmd)
+func NewCmd(configFileName string, logFileName string, rflag bool) Ltestcmd {
+	return Ltestcmd{
+		ConfigFile: configFileName,
+		LogFile:    logFileName,
+		Rflag:      rflag,
+	}
+}
+
+func Serialize(cmd *Ltestcmd) ([]byte, error) {
+	jsonData, err := json.Marshal(&cmd)
 	if err != nil {
 		return nil, err
 	}
 	return jsonData, nil
 }
 
-func deserialize(data []byte) (*ltestcmd, error) {
-	var cmd ltestcmd
+func Deserialize() (*Ltestcmd, error) {
+	var cmd Ltestcmd
+	data, err := os.ReadFile("cache.json")
+	if err != nil {
+		panic("nooo")
+	}
+
 	if err := json.Unmarshal(data, &cmd); err != nil {
 		return nil, err
 	}
 	return &cmd, nil
 }
 
-func isFileEmpty() (bool, error) {
+func IsFileEmpty() (bool, error) {
 	file, err := os.Open("cache.json")
 	if err != nil {
 		return false, err
