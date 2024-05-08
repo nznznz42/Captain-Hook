@@ -22,25 +22,44 @@ func NewCmd(configFileName string, logFileName string, rflag bool) Ltestcmd {
 	}
 }
 
-func Serialize(cmd *Ltestcmd) ([]byte, error) {
-	jsonData, err := json.Marshal(&cmd)
-	if err != nil {
-		return nil, err
+func Serialize(cmd *Ltestcmd) error {
+	data := map[string]interface{}{
+		"configFileName": cmd.ConfigFile,
+		"logFileName":    cmd.LogFile,
+		"rFlag":          cmd.Rflag,
 	}
-	return jsonData, nil
+
+	jsonData, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile("cache.json", jsonData, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Deserialize() (*Ltestcmd, error) {
-	var cmd Ltestcmd
-	data, err := os.ReadFile("cache.json")
+	fileData, err := os.ReadFile("cache.json")
 	if err != nil {
-		panic("nooo")
-	}
-
-	if err := json.Unmarshal(data, &cmd); err != nil {
 		return nil, err
 	}
-	return &cmd, nil
+
+	var data map[string]interface{}
+	if err := json.Unmarshal(fileData, &data); err != nil {
+		return nil, err
+	}
+
+	cmd := &Ltestcmd{
+		ConfigFile: data["configFileName"].(string),
+		LogFile:    data["logFileName"].(string),
+		Rflag:      data["rFlag"].(bool),
+	}
+
+	return cmd, nil
 }
 
 func IsFileEmpty() (bool, error) {

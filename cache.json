@@ -1,0 +1,5 @@
+{
+    "configFileName": "example.toml",
+    "logFileName": "log.log",
+    "rFlag": true
+}

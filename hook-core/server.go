@@ -97,8 +97,6 @@ func (s *Server) SendRequest(request *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
-
 	return response, nil
 }
 
@@ -133,13 +131,13 @@ func SendPayload(cmd *Ltestcmd) {
 			fmt.Println("Error: received value is not of type *http.Response")
 			return
 		}
-		defer httpResponse.Body.Close()
 
 		body, err := io.ReadAll(httpResponse.Body)
 		if err != nil {
 			fmt.Println("Error reading response body:", err)
 			return
 		}
+		defer httpResponse.Body.Close()
 
 		fmt.Println("Response received:", string(body))
 	case <-time.After(time.Second * 30):

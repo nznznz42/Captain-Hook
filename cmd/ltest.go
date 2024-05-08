@@ -22,7 +22,7 @@ var ltestCmd = &cobra.Command{
 			panic("no bool")
 		}
 		lcmd := hookcore.NewCmd(configPath, logPath, rflag)
-
+		hookcore.Serialize(&lcmd)
 		hookcore.SendPayload(&lcmd)
 	},
 }
