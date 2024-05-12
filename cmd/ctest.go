@@ -27,25 +27,25 @@ var ctestCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("invalid Port")
 		}
-
-		//wg := sync.WaitGroup{}
-		//wg.Add(1)
-		c := hookcore.Newclient(domain)
-		defer c.Conn.Close()
-		fmt.Printf("link : %s", c.URL)
-
-		fields := []string{"Header", "Method", "Body"}
-		go c.Stream(os.Stdout, fields, portInt)
-		//wg.Wait()
-		//go c.Stream(os.Stdout, fields, portInt)
-
-		// Wait for interrupt signal (Ctrl+C)
-		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
-		<-sigCh
+		ccmd := hookcore.NewCcmd(domain, portInt)
+		hookcore.SerializeCcmd(&ccmd)
+		ExecuteCtest(&ccmd)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(ctestCmd)
+}
+
+func ExecuteCtest(ccmd *hookcore.Ctestcmd) {
+	c := hookcore.Newclient(ccmd.Domain)
+	defer c.Conn.Close()
+	fmt.Printf("link : %s", c.URL)
+
+	fields := []string{"Header", "Method", "Body"}
+	go c.Stream(os.Stdout, fields, ccmd.Port)
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	<-sigCh
 }

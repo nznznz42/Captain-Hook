@@ -21,8 +21,8 @@ var ltestCmd = &cobra.Command{
 		if err != nil {
 			panic("no bool")
 		}
-		lcmd := hookcore.NewCmd(configPath, logPath, rflag)
-		hookcore.Serialize(&lcmd)
+		lcmd := hookcore.NewLcmd(configPath, logPath, rflag)
+		hookcore.SerializeLcmd(&lcmd)
 		hookcore.SendPayload(&lcmd)
 	},
 }
