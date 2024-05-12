@@ -5,30 +5,40 @@ package cmd
 
 import (
 	"fmt"
+	hookcore "hooktest/hook-core"
+	"log"
+	"os"
+	"strconv"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
 
-// ctestCmd represents the ctest command
 var ctestCmd = &cobra.Command{
 	Use:   "ctest",
 	Short: "runs cloud test system",
 	Long:  `This command uses the cloud component to live test your webhook.`,
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ctest called")
+		domain := args[0]
+		port := args[1]
+		portInt, err := strconv.Atoi(port)
+		if err != nil {
+			log.Fatalf("invalid Port")
+		}
+
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		c := hookcore.Newclient(domain)
+		defer c.Conn.Close()
+		fmt.Printf("link : %s", c.URL)
+
+		fields := []string{"Header", "Method", "Body"}
+		go c.Stream(os.Stdout, fields, portInt)
+		wg.Wait()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(ctestCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// ctestCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// ctestCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
