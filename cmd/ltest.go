@@ -10,7 +10,7 @@ import (
 )
 
 var ltestCmd = &cobra.Command{
-	Use:   "ltest",
+	Use:   "ltest [config filename] [log filename]",
 	Short: "Runs Local Test System",
 	Long:  `This command creates and sends a payload to your webhook locally`,
 	Args:  cobra.ExactArgs(2),

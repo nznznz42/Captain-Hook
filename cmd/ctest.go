@@ -8,14 +8,15 @@ import (
 	hookcore "hooktest/hook-core"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
-	"sync"
+	"syscall"
 
 	"github.com/spf13/cobra"
 )
 
 var ctestCmd = &cobra.Command{
-	Use:   "ctest",
+	Use:   "ctest [domain: wss://example.com/ws] [port]",
 	Short: "runs cloud test system",
 	Long:  `This command uses the cloud component to live test your webhook.`,
 	Args:  cobra.ExactArgs(2),
@@ -27,15 +28,21 @@ var ctestCmd = &cobra.Command{
 			log.Fatalf("invalid Port")
 		}
 
-		wg := sync.WaitGroup{}
-		wg.Add(1)
+		//wg := sync.WaitGroup{}
+		//wg.Add(1)
 		c := hookcore.Newclient(domain)
 		defer c.Conn.Close()
 		fmt.Printf("link : %s", c.URL)
 
 		fields := []string{"Header", "Method", "Body"}
 		go c.Stream(os.Stdout, fields, portInt)
-		wg.Wait()
+		//wg.Wait()
+		//go c.Stream(os.Stdout, fields, portInt)
+
+		// Wait for interrupt signal (Ctrl+C)
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+		<-sigCh
 	},
 }
 

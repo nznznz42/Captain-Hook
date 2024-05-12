@@ -25,58 +25,51 @@ func TestRandomURL(t *testing.T) {
 	}
 }
 
-//func TestRandomizeJSON(t *testing.T) {
-//	originalData := map[string]interface{}{
-//		"key1": "https://example.com",
-//		"key2": "randomString",
-//		"key3": []interface{}{
-//			"https://example.com",
-//			"randomString",
-//		},
-//	}
-//
-//	data := make(map[string]interface{})
-//	for key, value := range originalData {
-//		data[key] = value
-//	}
-//
-//	hookcore.RandomizeJSON(data)
-//
-//	for key, value := range data {
-//		originalValue, ok := originalData[key]
-//		if !ok {
-//			t.Errorf("Key %s does not exist in original data", key)
-//			continue
-//		}
-//
-//		switch v := value.(type) {
-//		case string:
-//			if originalValue == value {
-//				t.Errorf("Field %s is not randomized: %s", key, v)
-//			}
-//		case []interface{}:
-//			originalSlice, ok := originalValue.([]interface{})
-//			if !ok {
-//				t.Errorf("Field %s in original data is not a slice", key)
-//				continue
-//			}
-//
-//			if len(v) != len(originalSlice) {
-//				t.Errorf("Length of slice %s is different from original data", key)
-//				continue
-//			}
-//
-//			for i, innerValue := range v {
-//				originalInnerValue := originalSlice[i]
-//				if originalInnerValue == innerValue {
-//					t.Errorf("Value in slice %s at index %d is not randomized: %v", key, i, innerValue)
-//				}
-//			}
-//		default:
-//			t.Errorf("Unexpected data type for field %s", key)
-//		}
-//	}
-//}
+func TestRandomizeJSON(t *testing.T) {
+	originalData := map[string]interface{}{
+		"key1": "https://example.com",
+		"key2": "randomString",
+		"key3": []interface{}{
+			"https://example.com",
+			"randomString",
+		},
+	}
+
+	data := make(map[string]interface{})
+	for key, value := range originalData {
+		data[key] = value
+	}
+
+	hookcore.RandomizeJSON(data)
+
+	for key, value := range data {
+		originalValue, ok := originalData[key]
+		if !ok {
+			t.Errorf("Key %s does not exist in original data", key)
+			continue
+		}
+
+		switch v := value.(type) {
+		case string:
+			if originalValue == value {
+				t.Errorf("Field %s is not randomized: %s", key, v)
+			}
+		case []interface{}:
+			originalSlice, ok := originalValue.([]interface{})
+			if !ok {
+				t.Errorf("Field %s in original data is not a slice", key)
+				continue
+			}
+
+			if len(v) != len(originalSlice) {
+				t.Errorf("Length of slice %s is different from original data", key)
+				continue
+			}
+		default:
+			t.Errorf("Unexpected data type for field %s", key)
+		}
+	}
+}
 
 func TestIsURL(t *testing.T) {
 	testCases := map[string]bool{
